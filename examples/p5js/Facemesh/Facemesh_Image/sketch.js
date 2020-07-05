@@ -2,33 +2,41 @@ let facemesh;
 let predictions = [];
 let img;
 
-function preload() {
-  img = loadImage('data/harriet.jpg');
+function setup() {
+  createCanvas(640, 360);
+
+  // create an image using the p5 dom library
+  // call modelReady() when it is loaded
+  img = createImg("data/harriet.jpg", imageReady);
+  // set the image size to the size of the canvas
+  img.size(width, height);
+
+  img.hide(); // hide the image in the browser
+  frameRate(1); // set the frameRate to 1 since we don't need it to be running quickly in this case
 }
 
-function setup() {
-  createCanvas(640, 480);
+// when the image is ready, then load up poseNet
+function imageReady() {
   facemesh = ml5.facemesh(modelReady);
 
-  // This sets up an event that fills the global variable "predictions"
-  // with an array every time new predictions are made
-  // facemesh.on("predict", results => {
-  //   predictions = results;
-  // });
+  facemesh.on("predict", results => {
+    predictions = results;
+  });
 }
 
-async function modelReady() {
+// when poseNet is ready, do the detection
+function modelReady() {
   console.log("Model ready!");
-  console.log(facemesh);
-  // predictions = await facemesh.predict();
-  // console.log(predictions);
+  facemesh.predict(img);
 }
 
+// draw() will not show anything until poses are found
 function draw() {
-  image(img, 0, 0, width, height);
-
-  // We can call both functions to draw all keypoints
-  // drawKeypoints();
+  if (predictions.length > 0) {
+    image(img, 0, 0, width, height);
+    drawKeypoints();
+    noLoop(); // stop looping when the poses are estimated
+  }
 }
 
 // A function to draw ellipses over the detected keypoints

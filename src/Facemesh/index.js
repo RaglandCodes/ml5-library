@@ -64,19 +64,19 @@ class Facemesh extends EventEmitter {
     console.log("Predict");
     const input = this.getInput(inputOr);
     const { flipHorizontal } = this.config;
-    // const predictions = await this.model.estimateFaces(input, flipHorizontal);
-    // console.log("INTERNAL PREDICTIONS", predictions);
-    // const result = predictions;
-    // this.emit("predict", result);
+    const predictions = await this.model.estimateFaces(input, flipHorizontal);
+    console.log("INTERNAL PREDICTIONS", predictions);
+    const result = predictions;
+    this.emit("predict", result);
 
-    // if (this.video) {
-    //   return tf.nextFrame().then(() => this.predict());
-    // }
+    if (this.video) {
+      return tf.nextFrame().then(() => this.predict());
+    }
 
-    // if (typeof callback === "function") {
-    //   callback(result);
-    // }
-    const result = null;
+    if (typeof callback === "function") {
+      callback(result);
+    }
+    // const result = null;
     return result;
   }
 
